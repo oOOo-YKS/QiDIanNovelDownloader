@@ -16,8 +16,8 @@ while True:
         result = read_page(page)
         if result[4]:
             db.add_chapter(result[0], result[1], result[2], result[3])
-            wait_random_time()
             result[4].click()
+            wait_random_time()
         else:
             break
     except:
