@@ -6,9 +6,7 @@ import re
 from urllib.parse import urlparse
 from database_helper import DatabaseHelper
 
-# 初始化 Chromium 配置和页面对象
-co = ChromiumOptions(ini_path=r'config.ini')
-page = ChromiumPage(addr_or_opts=co)
+
 # 解析 URL 获取章节 ID
 def get_page_id(webpage):
     parsed_url = urlparse(webpage.url)
@@ -68,6 +66,9 @@ def read_page(webpage):
     next_button = get_next_button(webpage=webpage)
     return (novel_id, chapter_id, title, content_text, next_button)
 
-result = read_page(page)
-db = DatabaseHelper()
-db.add_chapter(result[0], result[1], result[2], result[3])
+def get_to_certain_page():
+    # 初始化 Chromium 配置和页面对象
+    co = ChromiumOptions(ini_path=r'config.ini')
+    page = ChromiumPage(addr_or_opts=co)
+    page.get("https://www.qidian.com/")
+    return page
