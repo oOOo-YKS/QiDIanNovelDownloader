@@ -32,7 +32,7 @@ class DatabaseHelper:
                 )
             """)
 
-    def _create_chapter_table(self, novel_id):
+    def _create_chapter_table(self, novel_id: int):
         """
         Create a chapter table for a specific novel ID.
 
@@ -82,22 +82,27 @@ class DatabaseHelper:
 
         :param novel_id: The ID of the novel.
         :param latest_chapter_id: The latest chapter ID of the novel.
-        :param state: The state of the novel (e.g., ongoing, completed).
         """
         with self._connect() as conn:
             conn.execute("""
                 INSERT INTO novels (novel_id, latest_chapter_id, latest_update_time)
                 VALUES (?, ?, ?)
             """, (novel_id, latest_chapter_id, self._current_time()))
-            self._create_chapter_table(novel_id)
+        self._create_chapter_table(novel_id)
 
-    def name_novel(self, nocel_id, novel_name):
+    def name_novel(self, novel_id: int, novel_name: str) -> None:
+        """
+        Set the name of a novel.
+
+        :param novel_id: The ID of the novel.
+        :param novel_name: The name of the novel.
+        """
         with self._connect() as conn:
             conn.execute("""
                 UPDATE novels
-                SET novel_name =  ?
+                SET novel_name = ?
                 WHERE novel_id = ?
-            """, (novel_name))
+            """, (novel_name, novel_id))
 
     def update_novel(self, novel_id: int, latest_chapter_id: int, latest_update_time: str) -> None:
         """
@@ -128,7 +133,6 @@ class DatabaseHelper:
                     INSERT INTO novels (novel_id, latest_chapter_id, latest_update_time)
                     VALUES (?, ?, ?)
                 """, (novel_id, latest_chapter_id, latest_update_time))
-
 
     def get_novel_by_id(self, novel_id: int) -> Any:
         """
@@ -171,3 +175,18 @@ class DatabaseHelper:
 if __name__ == "__main__":
     db_helper = DatabaseHelper()
 
+    # Add a new novel
+    db_helper.add_novel(novel_id=1, latest_chapter_id=0)
+
+    # Set the novel's name
+    db_helper.name_novel(novel_id=1, novel_name="My First Novel")
+
+    # Add a chapter
+    db_helper.add_chapter(novel_id=1, chapter_id=1, title="Chapter 1", content="This is the first chapter.")
+
+    # Retrieve all novels
+    novels = db_helper.get_all_novels()
+    print("All novels:", novels)
+
+    # Delete a novel
+    db_helper.delete_novel(novel_id=1)
